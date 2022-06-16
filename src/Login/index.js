@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import styled from "styled-components";
 
@@ -77,7 +78,24 @@ export const Login = () => {
   const [userNameValue, setUserNameValue] = useState("");
   const [passwordValue, setpasswordValue] = useState("");
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState({});
 
+  const HandleClick = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const { data } = await axios.get(
+        "https://jsonplaceholder.typicode.com/users/2"
+      );
+      setUser(data);
+    } catch (error) {
+      setIsError(true);
+    }
+    setIsLoading(false);
+  };
+
+  console.log("User", user);
   return (
     <Container>
       <H1Styled data-testid="login-text">Login</H1Styled>
@@ -94,8 +112,11 @@ export const Login = () => {
           value={passwordValue}
           onChange={(event) => setpasswordValue(event.target.value)}
         />
-        <ButtonStyled disabled={!userNameValue || !passwordValue}>
-          Login
+        <ButtonStyled
+          disabled={!userNameValue || !passwordValue}
+          onClick={HandleClick}
+        >
+          {isLoading ? "...Loading" : "Login"}
         </ButtonStyled>
         <ErrorMessage isVisible={isError} data-testid="error-text">
           Something went wrong!

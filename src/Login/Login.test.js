@@ -1,5 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Login from ".";
+
+jest.mock("axios", () => ({
+  __esModule: true,
+
+  default: {
+    get: () => ({
+      data: { id: 1, name: "Jhon" },
+    }),
+  },
+}));
 
 test("login text should be rendered", () => {
   render(<Login />);
@@ -43,6 +53,12 @@ test("button should be disabled", () => {
   expect(buttonEl).toBeDisabled();
 });
 
+test("loading should not be rendered", () => {
+  render(<Login />);
+  const buttonEl = screen.getByRole("button");
+  expect(buttonEl).not.toHaveTextContent(/...Loading/i);
+});
+
 test("error message should not be visible", () => {
   render(<Login />);
   const errorEl = screen.getByTestId("error-text");
@@ -78,4 +94,36 @@ test("button should not be disabled if input has value", () => {
   fireEvent.change(passwordInputEl, { target: { value: testValue } });
 
   expect(buttonEl).not.toBeDisabled();
+});
+
+test("loading should be rendered when click", () => {
+  render(<Login />);
+  const buttonEl = screen.getByRole("button");
+
+  const usernameInputEl = screen.getByPlaceholderText(/username/i);
+  const passwordInputEl = screen.getByPlaceholderText(/password/i);
+
+  const testValue = "test";
+
+  fireEvent.change(usernameInputEl, { target: { value: testValue } });
+  fireEvent.change(passwordInputEl, { target: { value: testValue } });
+  fireEvent.click(buttonEl);
+
+  expect(buttonEl).toHaveTextContent(/...Loading/i);
+});
+
+test("loading should be rendered after fetch", async () => {
+  render(<Login />);
+  const buttonEl = screen.getByRole("button");
+
+  const usernameInputEl = screen.getByPlaceholderText(/username/i);
+  const passwordInputEl = screen.getByPlaceholderText(/password/i);
+
+  const testValue = "test";
+
+  fireEvent.change(usernameInputEl, { target: { value: testValue } });
+  fireEvent.change(passwordInputEl, { target: { value: testValue } });
+  fireEvent.click(buttonEl);
+
+  await waitFor(() => expect(buttonEl).not.toHaveTextContent(/...Loading/i));
 });
