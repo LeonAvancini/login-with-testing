@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
   min-width: 300px;
-  min-height: 400px;
+  min-height: 300px;
   padding: 2rem 1rem;
   position: absolute;
   left: 50%;
