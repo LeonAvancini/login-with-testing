@@ -95,7 +95,6 @@ export const Login = () => {
     setIsLoading(false);
   };
 
-  console.log("User", user);
   return (
     <Container>
       <H1Styled data-testid="login-text">Login</H1Styled>
@@ -121,6 +120,7 @@ export const Login = () => {
         <ErrorMessage isVisible={isError} data-testid="error-text">
           Something went wrong!
         </ErrorMessage>
+        <span>{user.name}</span>
       </FormContainer>
     </Container>
   );
